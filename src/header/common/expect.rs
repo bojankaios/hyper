@@ -26,7 +26,7 @@ pub enum Expect {
     Continue
 }
 
-const EXPECT_CONTINUE: UniCase<&'static str> = UniCase("100-continue");
+const EXPECT_CONTINUE: UniCase<&'static str> = UniCase::ascii("100-continue");
 
 impl Header for Expect {
     fn header_name() -> &'static str {
@@ -44,7 +44,7 @@ impl Header for Expect {
                 //    None. No big deal.
                 str::from_utf8_unchecked(raw.get_unchecked(0))
             };
-            if UniCase(text) == EXPECT_CONTINUE {
+            if UniCase::new(text) == EXPECT_CONTINUE {
                 Ok(Expect::Continue)
             } else {
                 Err(::Error::Header)

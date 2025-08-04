@@ -287,7 +287,7 @@ impl Headers {
         let mut headers = Headers::new();
         for header in raw {
             trace!("raw header: {:?}={:?}", header.name, &header.value[..]);
-            let name = UniCase(CowStr(Cow::Owned(header.name.to_owned())));
+            let name = UniCase::from(CowStr(Cow::Owned(header.name.to_owned())));
             let item = match headers.data.entry(name) {
                 Entry::Vacant(entry) => entry.insert(Item::new_raw(vec![])),
                 Entry::Occupied(entry) => entry.into_mut()
@@ -304,7 +304,7 @@ impl Headers {
     /// The field is determined by the type of the value being set.
     pub fn set<H: Header + HeaderFormat>(&mut self, value: H) {
         trace!("Headers.set( {:?}, {:?} )", header_name::<H>(), value);
-        self.data.insert(UniCase(CowStr(Cow::Borrowed(header_name::<H>()))),
+        self.data.insert(UniCase::from(CowStr(Cow::Borrowed(header_name::<H>()))),
                          Item::new_typed(Box::new(value)));
     }
 
@@ -321,7 +321,7 @@ impl Headers {
     /// ```
     pub fn get_raw(&self, name: &str) -> Option<&[Vec<u8>]> {
         self.data
-            .get(&UniCase(CowStr(Cow::Borrowed(unsafe { mem::transmute::<&str, &str>(name) }))))
+            .get(&UniCase::from(CowStr(Cow::Borrowed(unsafe { mem::transmute::<&str, &str>(name) }))))
             .map(Item::raw)
     }
 
@@ -341,7 +341,7 @@ impl Headers {
             value: Vec<Vec<u8>>) {
         let name = name.into();
         trace!("Headers.set_raw( {:?}, {:?} )", name, value);
-        self.data.insert(UniCase(CowStr(name)), Item::new_raw(value));
+        self.data.insert(UniCase::from(CowStr(name)), Item::new_raw(value));
     }
 
     /// Append a value to raw value of this header.
@@ -362,7 +362,7 @@ impl Headers {
     pub fn append_raw<K: Into<Cow<'static, str>>>(&mut self, name: K, value: Vec<u8>) {
         let name = name.into();
         trace!("Headers.append_raw( {:?}, {:?} )", name, value);
-        let name = UniCase(CowStr(name));
+        let name = UniCase::from(CowStr(name));
         if let Some(item) = self.data.get_mut(&name) {
             item.raw_mut().push(value);
             return;
@@ -374,19 +374,19 @@ impl Headers {
     pub fn remove_raw(&mut self, name: &str) {
         trace!("Headers.remove_raw( {:?} )", name);
         self.data.remove(
-            &UniCase(CowStr(Cow::Borrowed(unsafe { mem::transmute::<&str, &str>(name) })))
+            &UniCase::from(CowStr(Cow::Borrowed(unsafe { mem::transmute::<&str, &str>(name) })))
         );
     }
 
     /// Get a reference to the header field's value, if it exists.
     pub fn get<H: Header + HeaderFormat>(&self) -> Option<&H> {
-        self.data.get(&UniCase(CowStr(Cow::Borrowed(header_name::<H>()))))
+        self.data.get(&UniCase::from(CowStr(Cow::Borrowed(header_name::<H>()))))
         .and_then(Item::typed::<H>)
     }
 
     /// Get a mutable reference to the header field's value, if it exists.
     pub fn get_mut<H: Header + HeaderFormat>(&mut self) -> Option<&mut H> {
-        self.data.get_mut(&UniCase(CowStr(Cow::Borrowed(header_name::<H>()))))
+        self.data.get_mut(&UniCase::from(CowStr(Cow::Borrowed(header_name::<H>()))))
         .and_then(Item::typed_mut::<H>)
     }
 
@@ -401,14 +401,14 @@ impl Headers {
     /// let has_type = headers.has::<ContentType>();
     /// ```
     pub fn has<H: Header + HeaderFormat>(&self) -> bool {
-        self.data.contains_key(&UniCase(CowStr(Cow::Borrowed(header_name::<H>()))))
+        self.data.contains_key(&UniCase::from(CowStr(Cow::Borrowed(header_name::<H>()))))
     }
 
     /// Removes a header from the map, if one existed.
     /// Returns true if a header has been removed.
     pub fn remove<H: Header + HeaderFormat>(&mut self) -> bool {
         trace!("Headers.remove( {:?} )", header_name::<H>());
-        self.data.remove(&UniCase(CowStr(Cow::Borrowed(header_name::<H>())))).is_some()
+        self.data.remove(&UniCase::from(CowStr(Cow::Borrowed(header_name::<H>())))).is_some()
     }
 
     /// Returns an iterator over the header fields.
@@ -485,7 +485,7 @@ impl<'a> HeaderView<'a> {
     /// Check if a HeaderView is a certain Header.
     #[inline]
     pub fn is<H: Header>(&self) -> bool {
-        UniCase(CowStr(Cow::Borrowed(header_name::<H>()))) == *self.0
+        UniCase::from(CowStr(Cow::Borrowed(header_name::<H>()))) == *self.0
     }
 
     /// Get the Header name as a slice.
@@ -540,7 +540,6 @@ impl<'a> FromIterator<HeaderView<'a>> for Headers {
     }
 }
 
-#[deprecated(note="The semantics of formatting a HeaderFormat directly are not clear")]
 impl<'a> fmt::Display for &'a (HeaderFormat + Send + Sync) {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -616,8 +615,6 @@ impl AsRef<str> for CowStr {
 mod tests {
     use std::fmt;
     use mime::Mime;
-    use mime::TopLevel::Text;
-    use mime::SubLevel::Plain;
     use super::{Headers, Header, HeaderFormat, ContentLength, ContentType,
                 Accept, Host, qitem};
     use httparse;
@@ -657,12 +654,12 @@ mod tests {
     #[test]
     fn test_content_type() {
         let content_type = Header::parse_header([b"text/plain".to_vec()].as_ref());
-        assert_eq!(content_type.ok(), Some(ContentType(Mime(Text, Plain, vec![]))));
+        assert_eq!(content_type.ok(), Some(ContentType(mime::TEXT_PLAIN)));
     }
 
     #[test]
     fn test_accept() {
-        let text_plain = qitem(Mime(Text, Plain, vec![]));
+        let text_plain = qitem(mime::TEXT_PLAIN);
         let application_vendor = "application/vnd.github.v3.full+json; q=0.5".parse().unwrap();
 
         let accept = Header::parse_header([b"text/plain".to_vec()].as_ref());
@@ -793,7 +790,7 @@ mod tests {
         let mut headers = Headers::new();
         headers.set(ContentLength(10));
         assert_eq!(headers.len(), 1);
-        headers.set(ContentType(Mime(Text, Plain, vec![])));
+        headers.set(ContentType(mime::TEXT_PLAIN));
         assert_eq!(headers.len(), 2);
         // Redundant, should not increase count.
         headers.set(ContentLength(20));
@@ -804,7 +801,7 @@ mod tests {
     fn test_clear() {
         let mut headers = Headers::new();
         headers.set(ContentLength(10));
-        headers.set(ContentType(Mime(Text, Plain, vec![])));
+        headers.set(ContentType(mime::TEXT_PLAIN));
         assert_eq!(headers.len(), 2);
         headers.clear();
         assert_eq!(headers.len(), 0);

@@ -38,7 +38,7 @@ use header::{Header, HeaderFormat};
 #[derive(Clone, PartialEq, Debug)]
 pub struct AccessControlAllowCredentials;
 
-const ACCESS_CONTROL_ALLOW_CREDENTIALS_TRUE: UniCase<&'static str> = UniCase("true");
+const ACCESS_CONTROL_ALLOW_CREDENTIALS_TRUE: UniCase<&'static str> = UniCase::unicode("true");
 
 impl Header for AccessControlAllowCredentials {
     fn header_name() -> &'static str {
@@ -56,7 +56,7 @@ impl Header for AccessControlAllowCredentials {
                 //    None. No big deal.
                 str::from_utf8_unchecked(raw.get_unchecked(0))
             };
-            if UniCase(text) == ACCESS_CONTROL_ALLOW_CREDENTIALS_TRUE {
+            if UniCase::unicode(text) == ACCESS_CONTROL_ALLOW_CREDENTIALS_TRUE {
                 return Ok(AccessControlAllowCredentials);
             }
         }

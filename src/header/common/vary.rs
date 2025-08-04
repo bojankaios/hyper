@@ -39,8 +39,8 @@ header! {
     /// let mut headers = Headers::new();
     /// headers.set(
     ///     Vary::Items(vec![
-    ///         UniCase("accept-encoding".to_owned()),
-    ///         UniCase("accept-language".to_owned()),
+    ///         UniCase::ascii("accept-encoding".to_owned()),
+    ///         UniCase::ascii("accept-language".to_owned()),
     ///     ])
     /// );
     /// # }

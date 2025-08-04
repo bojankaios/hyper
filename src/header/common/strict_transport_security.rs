@@ -1,8 +1,6 @@
 use std::fmt;
 use std::str::{self, FromStr};
 
-use unicase::UniCase;
-
 use header::{Header, HeaderFormat, parsing};
 
 /// `StrictTransportSecurity` header, defined in [RFC6797](https://tools.ietf.org/html/rfc6797)
@@ -85,13 +83,13 @@ impl FromStr for StrictTransportSecurity {
     fn from_str(s: &str) -> ::Result<StrictTransportSecurity> {
         s.split(';')
             .map(str::trim)
-            .map(|sub| if UniCase(sub) == UniCase("includeSubdomains") {
+            .map(|sub| if unicase::eq(sub,"includeSubdomains") {
                 Ok(Directive::IncludeSubdomains)
             } else {
                 let mut sub = sub.splitn(2, '=');
                 match (sub.next(), sub.next()) {
                     (Some(left), Some(right))
-                    if UniCase(left.trim()) == UniCase("max-age") => {
+                    if unicase::eq(left.trim(),"max-age") => {
                         right
                             .trim()
                             .trim_matches('"')

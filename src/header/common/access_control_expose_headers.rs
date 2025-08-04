@@ -28,8 +28,8 @@ header! {
     /// let mut headers = Headers::new();
     /// headers.set(
     ///     AccessControlExposeHeaders(vec![
-    ///         UniCase("etag".to_owned()),
-    ///         UniCase("content-length".to_owned())
+    ///         UniCase::ascii("etag".to_owned()),
+    ///         UniCase::ascii("content-length".to_owned())
     ///     ])
     /// );
     /// # }
@@ -46,8 +46,8 @@ header! {
     /// let mut headers = Headers::new();
     /// headers.set(
     ///     AccessControlExposeHeaders(vec![
-    ///         UniCase("etag".to_owned()),
-    ///         UniCase("content-length".to_owned())
+    ///         UniCase::ascii("etag".to_owned()),
+    ///         UniCase::ascii("content-length".to_owned())
     ///     ])
     /// );
     /// # }

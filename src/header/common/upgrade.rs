@@ -1,6 +1,5 @@
 use std::fmt::{self, Display};
 use std::str::FromStr;
-use unicase::UniCase;
 
 header! {
     /// `Upgrade` header, defined in [RFC7230](http://tools.ietf.org/html/rfc7230#section-6.7)
@@ -99,7 +98,7 @@ impl FromStr for ProtocolName {
             "TLS" => ProtocolName::Tls,
             "h2c" => ProtocolName::H2c,
             _ => {
-                if UniCase(s) == UniCase("websocket") {
+                if unicase::eq(s, "websocket") {
                     ProtocolName::WebSocket
                 } else {
                     ProtocolName::Unregistered(s.to_owned())

@@ -28,7 +28,7 @@ header! {
     ///
     /// let mut headers = Headers::new();
     /// headers.set(
-    ///     AccessControlRequestHeaders(vec![UniCase("date".to_owned())])
+    ///     AccessControlRequestHeaders(vec![UniCase::ascii("date".to_owned())])
     /// );
     /// # }
     /// ```
@@ -44,8 +44,8 @@ header! {
     /// let mut headers = Headers::new();
     /// headers.set(
     ///     AccessControlRequestHeaders(vec![
-    ///         UniCase("accept-language".to_owned()),
-    ///         UniCase("date".to_owned()),
+    ///         UniCase::ascii("accept-language".to_owned()),
+    ///         UniCase::ascii("date".to_owned()),
     ///     ])
     /// );
     /// # }

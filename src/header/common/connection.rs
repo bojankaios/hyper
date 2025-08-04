@@ -4,8 +4,8 @@ use unicase::UniCase;
 
 pub use self::ConnectionOption::{KeepAlive, Close, ConnectionHeader};
 
-const KEEP_ALIVE: UniCase<&'static str> = UniCase("keep-alive");
-const CLOSE: UniCase<&'static str> = UniCase("close");
+const KEEP_ALIVE: UniCase<&'static str> = UniCase::unicode("keep-alive");
+const CLOSE: UniCase<&'static str> = UniCase::unicode("close");
 
 /// Values that can be in the `Connection` header.
 #[derive(Clone, PartialEq, Debug)]
@@ -28,22 +28,22 @@ pub enum ConnectionOption {
 impl FromStr for ConnectionOption {
     type Err = ();
     fn from_str(s: &str) -> Result<ConnectionOption, ()> {
-        if UniCase(s) == KEEP_ALIVE {
+        if UniCase::unicode(s) == KEEP_ALIVE {
             Ok(KeepAlive)
-        } else if UniCase(s) == CLOSE {
+        } else if UniCase::unicode(s) == CLOSE {
             Ok(Close)
         } else {
-            Ok(ConnectionHeader(UniCase(s.to_owned())))
+            Ok(ConnectionHeader(UniCase::unicode(s.to_owned())))
         }
     }
 }
 
 impl Display for ConnectionOption {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.write_str(match *self {
+        f.write_str(match self {
             KeepAlive => "keep-alive",
             Close => "close",
-            ConnectionHeader(UniCase(ref s)) => s.as_ref()
+            ConnectionHeader(unicase_one) => unicase_one.as_str(),
         })
     }
 }
@@ -88,7 +88,7 @@ header! {
     /// let mut headers = Headers::new();
     /// headers.set(
     ///     Connection(vec![
-    ///         ConnectionOption::ConnectionHeader(UniCase("upgrade".to_owned())),
+    ///         ConnectionOption::ConnectionHeader(UniCase::ascii("upgrade".to_owned())),
     ///     ])
     /// );
     /// # }
@@ -137,7 +137,7 @@ mod tests {
         assert_eq!(Connection::close(),parse_option(b"close".to_vec()));
         assert_eq!(Connection::keep_alive(),parse_option(b"keep-alive".to_vec()));
         assert_eq!(Connection::keep_alive(),parse_option(b"Keep-Alive".to_vec()));
-        assert_eq!(Connection(vec![ConnectionHeader(UniCase("upgrade".to_owned()))]),
+        assert_eq!(Connection(vec![ConnectionHeader(UniCase::ascii("upgrade".to_owned()))]),
             parse_option(b"upgrade".to_vec()));
     }
 }
