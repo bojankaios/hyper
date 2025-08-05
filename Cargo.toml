@@ -30,7 +30,9 @@ time = "0.1"
 traitobject = "0.1"
 typeable = "0.1"
 unicase = "2.0"
-url = "1.0"
+url = "2.0"
+percent-encoding = "2.0"
+idna ="1.0"
 
 [dev-dependencies]
 env_logger = "0.6"

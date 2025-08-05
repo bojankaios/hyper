@@ -2,7 +2,7 @@ use header::{Header, HeaderFormat};
 use std::fmt;
 use std::str::FromStr;
 use header::parsing::from_one_raw_str;
-use url::idna::domain_to_unicode;
+use idna::domain_to_unicode;
 
 /// The `Host` header.
 ///

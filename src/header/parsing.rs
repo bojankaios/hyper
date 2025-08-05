@@ -4,7 +4,6 @@ use language_tags::LanguageTag;
 use std::str;
 use std::str::FromStr;
 use std::fmt::{self, Display};
-use url::percent_encoding;
 
 use header::shared::Charset;
 
@@ -128,6 +127,29 @@ pub fn parse_extended_value(val: &str) -> ::Result<ExtendedValue> {
     })
 }
 
+use percent_encoding::{AsciiSet, CONTROLS};
+pub const HTTP_VALUE: &AsciiSet = &CONTROLS
+    .add(b' ')
+    .add(b'"')
+    .add(b'%')
+    .add(b'\'')
+    .add(b'(')
+    .add(b')')
+    .add(b'*')
+    .add(b',')
+    .add(b'/')
+    .add(b':')
+    .add(b';')
+    .add(b'<')
+    .add(b'-')
+    .add(b'>')
+    .add(b'?')
+    .add(b'[')
+    .add(b'\\')
+    .add(b']')
+    .add(b'{')
+    .add(b'}');
+/*
 define_encode_set! {
     /// This encode set is used for HTTP header values and is defined at
     /// https://tools.ietf.org/html/rfc5987#section-3.2
@@ -136,7 +158,7 @@ define_encode_set! {
         '[', '\\', ']', '{', '}'
     }
 }
-
+*/
 impl Display for ExtendedValue {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let encoded_value =

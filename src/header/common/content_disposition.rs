@@ -9,7 +9,6 @@
 use language_tags::LanguageTag;
 use std::fmt;
 use unicase::UniCase;
-use url::percent_encoding;
 
 use header::{Header, HeaderFormat, parsing};
 use header::parsing::{parse_extended_value, HTTP_VALUE};
