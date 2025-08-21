@@ -25,9 +25,7 @@ header! {
     /// use hyper::header::{Headers, AcceptLanguage, qitem};
     ///
     /// let mut headers = Headers::new();
-    /// let mut langtag: LanguageTag = Default::default();
-    /// langtag.language = Some("en".to_owned());
-    /// langtag.region = Some("US".to_owned());
+    /// let langtag: LanguageTag = LanguageTag::parse("en-US").unwrap();
     /// headers.set(
     ///     AcceptLanguage(vec![
     ///         qitem(langtag),
@@ -36,16 +34,17 @@ header! {
     /// ```
     /// ```
     /// # extern crate hyper;
-    /// # #[macro_use] extern crate language_tags;
+    /// # extern crate language_tags;
+    /// # use language_tags::LanguageTag;
     /// # use hyper::header::{Headers, AcceptLanguage, QualityItem, Quality, qitem};
     /// #
     /// # fn main() {
     /// let mut headers = Headers::new();
     /// headers.set(
     ///     AcceptLanguage(vec![
-    ///         qitem(langtag!(da)),
-    ///         QualityItem::new(langtag!(en;;;GB), Quality(800)),
-    ///         QualityItem::new(langtag!(en), Quality(700)),
+    ///         qitem(LanguageTag::parse("da").unwrap()),
+    ///         QualityItem::new(LanguageTag::parse("en-GB").unwrap(), Quality(800)),
+    ///         QualityItem::new(LanguageTag::parse("en").unwrap(), Quality(700)),
     ///     ])
     /// );
     /// # }
@@ -59,9 +58,9 @@ header! {
         test_header!(
             test2, vec![b"en-US, en; q=0.5, fr"],
             Some(AcceptLanguage(vec![
-                qitem(langtag!(en;;;US)),
-                QualityItem::new(langtag!(en), Quality(500)),
-                qitem(langtag!(fr)),
+                qitem(LanguageTag::parse("en-US").unwrap()),
+                QualityItem::new(LanguageTag::parse("en").unwrap(), Quality(500)),
+                qitem(LanguageTag::parse("fr").unwrap()),
         ])));
     }
 }

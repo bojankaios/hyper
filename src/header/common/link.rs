@@ -902,6 +902,7 @@ mod tests {
     use super::{fmt_delimited, verify_and_trim};
 
     use header::Header;
+    use language_tags::LanguageTag;
 
     use buffer::BufReader;
     use mock::MockStream;
@@ -952,7 +953,7 @@ mod tests {
             .push_rel(RelationType::Previous)
             .set_anchor("../anchor/example/")
             .push_rev(RelationType::Next)
-            .push_href_lang(langtag!(de))
+            .push_href_lang(LanguageTag::parse("de").unwrap())
             .push_media_desc(MediaDesc::Screen)
             .set_title("previous chapter")
             .set_title_star("title* unparsed")
@@ -1012,7 +1013,7 @@ mod tests {
             .push_rel(RelationType::Previous)
             .set_anchor("/anchor/example/")
             .push_rev(RelationType::Next)
-            .push_href_lang(langtag!(de))
+            .push_href_lang(LanguageTag::parse("de").unwrap())
             .push_media_desc(MediaDesc::Screen)
             .set_title("previous chapter")
             .set_title_star("title* unparsed")

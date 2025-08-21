@@ -22,7 +22,7 @@ include = [
 [dependencies]
 base64 = "0.21"
 httparse = "1.0"
-language-tags = "0.2"
+language-tags = "0.3"
 log = "0.4"
 mime = "0.3"
 num_cpus = "1.0"
